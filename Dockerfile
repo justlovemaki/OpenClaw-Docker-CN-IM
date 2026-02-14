@@ -36,7 +36,7 @@ ENV PATH="$BUN_INSTALL/bin:$PATH"
 RUN bun install -g https://github.com/tobi/qmd
 
 # 安装 OpenClaw 和 OpenCode AI
-RUN npm install -g openclaw@2026.2.12 opencode-ai@latest
+RUN npm install -g openclaw@2026.2.13 opencode-ai@latest
 
 # 安装 Playwright 和 Chromium
 RUN npm install -g playwright && npx playwright install chromium --with-deps
