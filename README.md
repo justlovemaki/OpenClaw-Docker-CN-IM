@@ -497,10 +497,10 @@ QQBOT_CLIENT_SECRET=你的AppSecret
 
 ### 1. 获取企业微信凭证
 
-1. 访问 [企业微信管理后台](https://work.weixin.qq.com/)
-2. 进入"应用管理" - 用 API 模式创建"智能机器人"应用
+1. 访问 [企业微信管理后台-安全与管理-管理工具](https://work.weixin.qq.com/wework_admin/frame#/manageTools)
+2. 进入"智能专区" - 用 API 模式创建"智能机器人"应用
 3. 在应用的"接收消息"配置中设置 Token 和 EncodingAESKey
-4. 设置"接收消息"URL 为你的服务地址（例如：https://your-domain.com/webhooks/wxwork），需要当前服务可公网访问
+4. 设置"接收消息"URL 为你的服务地址（例如： https://your-domain.com/webhooks/wecom ），需要当前服务可公网访问
 
 ### 2. 环境变量配置
 
