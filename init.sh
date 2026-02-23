@@ -177,6 +177,22 @@ def sync():
             if 'commands' not in c:
                 c['commands'] = {'enabled': True, 'allowlist': ['/new', '/status', '/help', '/compact']}
 
+        def sync_wecom_app(c, e):
+            c.update({
+                'enabled': True,
+                'corpId': e['WECOM_APP_CORP_ID'],
+                'corpSecret': e['WECOM_APP_CORP_SECRET'],
+                'agentId': e['WECOM_APP_AGENT_ID'],
+                'callbackToken': e['WECOM_APP_CALLBACK_TOKEN'],
+                'callbackAesKey': e['WECOM_APP_CALLBACK_AES_KEY'],
+            })
+            if e.get('WECOM_APP_WEBHOOK_PATH'):
+                c['webhookPath'] = e['WECOM_APP_WEBHOOK_PATH']
+            if e.get('WECOM_APP_PROXY'):
+                c['proxy'] = e['WECOM_APP_PROXY']
+            if 'commands' not in c:
+                c['commands'] = {'enabled': True, 'allowlist': ['/new', '/status', '/help', '/compact', '/clear']}
+
         # 同步规则矩阵
         sync_rules = [
             (['TELEGRAM_BOT_TOKEN'], 'telegram', 
@@ -190,7 +206,9 @@ def sync():
              lambda c, e: c.update({'enabled': True, 'appId': e['QQBOT_APP_ID'], 'clientSecret': e['QQBOT_CLIENT_SECRET']}),
              {'source': 'path', 'sourcePath': '/home/node/.openclaw/qqbot', 'installPath': '/home/node/.openclaw/extensions/qqbot'}),
             (['WECOM_TOKEN', 'WECOM_ENCODING_AES_KEY'], 'wecom', sync_wecom,
-             {'source': 'npm', 'spec': '@sunnoy/wecom', 'installPath': '/home/node/.openclaw/extensions/wecom'})
+             {'source': 'npm', 'spec': '@sunnoy/wecom', 'installPath': '/home/node/.openclaw/extensions/wecom'}),
+            (['WECOM_APP_CORP_ID', 'WECOM_APP_CORP_SECRET', 'WECOM_APP_AGENT_ID', 'WECOM_APP_CALLBACK_TOKEN', 'WECOM_APP_CALLBACK_AES_KEY'], 'wecom-app', sync_wecom_app,
+             {'source': 'path', 'sourcePath': '/home/node/.openclaw/extensions/openclaw-wechat', 'installPath': '/home/node/.openclaw/extensions/openclaw-wechat'})
         ]
 
         for req_envs, cid, config_fn, install_info in sync_rules:
@@ -207,6 +225,17 @@ def sync():
                 if cid in entries and entries[cid].get('enabled'):
                     entries[cid]['enabled'] = False
                     print(f'🚫 环境变量缺失，已禁用渠道: {cid}')
+
+        # 特殊处理: openclaw-wechat 插件 ID 为 clawdbot-wecom，channel ID 为 wecom-app
+        if entries.get('wecom-app', {}).get('enabled'):
+            entries['clawdbot-wecom'] = {'enabled': True}
+            del entries['wecom-app']  # plugin ID is clawdbot-wecom, not wecom-app
+            load = ensure_path(config, ['plugins', 'load'])
+            paths = load.get('paths', [])
+            wecom_path = '/home/node/.openclaw/extensions/openclaw-wechat'
+            if wecom_path not in paths:
+                paths.append(wecom_path)
+            load['paths'] = paths
 
         # --- 3. Gateway 同步 ---
         if env.get('OPENCLAW_GATEWAY_TOKEN'):
