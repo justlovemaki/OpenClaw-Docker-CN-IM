@@ -53,3 +53,4 @@ services:
       - "${OPENCLAW_BRIDGE_PORT}:18790"
     init: true
     restart: unless-stopped
+    network_mode: "host"
