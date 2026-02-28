@@ -240,6 +240,19 @@ def sync():
             (['QQBOT_APP_ID', 'QQBOT_CLIENT_SECRET'], 'qqbot',
              lambda c, e: c.update({'enabled': True, 'appId': e['QQBOT_APP_ID'], 'clientSecret': e['QQBOT_CLIENT_SECRET']}),
              {'source': 'path', 'sourcePath': '/home/node/.openclaw/qqbot', 'installPath': '/home/node/.openclaw/extensions/qqbot'}),
+            (['NAPCAT_REVERSE_WS_PORT'], 'napcat',
+               lambda c, e: c.update({
+                   'enabled': True,
+                   'reverseWsPort': int(e['NAPCAT_REVERSE_WS_PORT']),
+                   **(({'httpUrl': e['NAPCAT_HTTP_URL']}) if e.get('NAPCAT_HTTP_URL') else {}),
+                   **(({'accessToken': e['NAPCAT_ACCESS_TOKEN']}) if e.get('NAPCAT_ACCESS_TOKEN') else {}),
+                   **(({'admins': [int(x) for x in e['NAPCAT_ADMINS'].split(',') if x.strip()]}) if
+  e.get('NAPCAT_ADMINS') else {}),
+                   'requireMention': True,
+                   'rateLimitMs': 1000,
+               }),
+               {'source': 'path', 'sourcePath': '/home/node/.openclaw/extensions/napcat', 'installPath':
+  '/home/node/.openclaw/extensions/napcat'}),
             (['WECOM_TOKEN', 'WECOM_ENCODING_AES_KEY'], 'wecom', sync_wecom,
              {'source': 'npm', 'spec': '@sunnoy/wecom', 'installPath': '/home/node/.openclaw/extensions/wecom'})
         ]

@@ -49,19 +49,24 @@ ENV HOME=/home/node
 WORKDIR /home/node
 
 RUN cd /home/node/.openclaw/extensions && \
-    git clone --depth 1 https://github.com/soimy/openclaw-channel-dingtalk.git dingtalk && \
-    cd dingtalk && \
-    npm install --production && \
-    timeout 300 openclaw plugins install -l . || true && \
-    cd /home/node/.openclaw && \
-    git clone --depth 1 https://github.com/justlovemaki/qqbot.git && \
-    cd qqbot && \
-    timeout 300 openclaw plugins install . || true && \
-    timeout 300 openclaw plugins install @sunnoy/wecom || true && \
-    find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + && \
-    rm -rf /home/node/.openclaw/qqbot/.git && \
-    rm -rf /tmp/* /home/node/.npm /home/node/.cache
-
+  git clone --depth 1 https://github.com/soimy/openclaw-channel-dingtalk.git dingtalk && \
+  cd dingtalk && \
+  npm install --production && \
+  timeout 300 openclaw plugins install -l . || true && \
+  cd /home/node/.openclaw/extensions && \
+  git clone --depth 1 -b v4.17.25 https://github.com/Daiyimo/openclaw-napcat.git napcat && \
+  cd napcat && \
+  npm install --production && \
+  timeout 300 openclaw plugins install -l . || true && \
+  cd /home/node/.openclaw && \
+  git clone --depth 1 https://github.com/justlovemaki/qqbot.git && \
+  cd qqbot && \
+  timeout 300 openclaw plugins install . || true && \
+  timeout 300 openclaw plugins install @sunnoy/wecom || true && \
+  find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + && \
+  rm -rf /home/node/.openclaw/qqbot/.git && \
+  rm -rf /tmp/* /home/node/.npm /home/node/.cache
+  
 # 3. 最终配置
 USER root
 
