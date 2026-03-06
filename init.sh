@@ -347,9 +347,12 @@ def sync():
             
             imid_raw = env.get('IMAGE_MODEL_ID') or mid
             imid = [x.strip() for x in imid_raw.split(',') if x.strip()][0]
-            
+
             def get_full_mid(m_id, default_p='default'):
-                if '/' in m_id: return m_id
+                # 只要不是以 provider/ 开头，就补上前缀
+                # 这样确保模型 ID 始终是完整的 provider/model 格式
+                if m_id.startswith(f'{default_p}/'):
+                    return m_id
                 return f'{default_p}/{m_id}'
 
             if p1_active:
@@ -527,11 +530,17 @@ if [ "$SYNC_CHECK" = "false" ] || [ "$SYNC_CHECK" = "0" ] || [ "$SYNC_CHECK" = "
     echo "模型配置: 手动模式 (跳过环境变量同步)"
 else
     # 简单的 shell 逻辑来处理可能的 provider 前缀
+    # 只要不是以 provider/ 开头，就补上前缀
+    # 这样确保模型 ID 始终是完整的 provider/model 格式
     FINAL_MID="${MODEL_ID:-gpt-4o}"
-    [[ "$FINAL_MID" != */* ]] && FINAL_MID="default/$FINAL_MID"
-    
+    if [[ "$FINAL_MID" != default/* ]]; then
+        FINAL_MID="default/$FINAL_MID"
+    fi
+
     FINAL_IMID="${IMAGE_MODEL_ID:-${MODEL_ID:-gpt-4o}}"
-    [[ "$FINAL_IMID" != */* ]] && FINAL_IMID="default/$FINAL_IMID"
+    if [[ "$FINAL_IMID" != default/* ]]; then
+        FINAL_IMID="default/$FINAL_IMID"
+    fi
 
     echo "当前主模型: $FINAL_MID"
     echo "当前图片模型: $FINAL_IMID"
