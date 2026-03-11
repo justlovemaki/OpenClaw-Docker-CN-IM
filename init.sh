@@ -1137,7 +1137,7 @@ print_model_summary() {
 
     echo "当前主模型: $final_mid"
     echo "当前图片模型: $final_imid"
-    [ -n "$MODEL2_API_KEY" ] && echo "备用提供商: ${MODEL2_NAME:-model2} (已启用)"
+    [ -n "$MODEL2_API_KEY" ] && echo "备用提供商: ${MODEL2_NAME:-model2} (已启用)" || true
 }
 
 print_runtime_summary() {
